@@ -37,14 +37,39 @@ namespace CocosSharp_Spine
 
     public enum AttachmentType
     {
-        ATTACHMENT_REGION = 1, ATTACHMENT_REGION_SEQUENCE = 2, ATTACHMENT_BOUNDING_BOX = 3
+        ATTACHMENT_REGION = 1,
+        ATTACHMENT_REGION_SEQUENCE = 2,
+        ATTACHMENT_BOUNDING_BOX = 3
     }
 
     public class CCSkeleton : CCNode
     {
+        class SkeletonTextureLoader : TextureLoader
+        {
+            public SkeletonTextureLoader()
+            {
+            }
 
-        public float FLT_MAX = 3.402823466e+38F;     /* max value */
-        public float FLT_MIN = 1.175494351e-38F;     /* min positive value */
+            CCTexture2D texture;
+
+            public void Load(AtlasPage page, String path)
+            {
+                var ccTexture = CCTextureCache.SharedTextureCache.AddImage(path);
+                texture = ccTexture;
+
+                page.rendererObject = texture;
+                page.width = (int)texture.ContentSizeInPixels.Width;
+                page.height = (int)texture.ContentSizeInPixels.Height;
+            }
+
+            public void Unload(Object texture)
+            {
+                ((CCTexture2D)texture).Dispose();
+            }
+        }
+
+        public float FLT_MAX = float.MinValue;     /* max value */
+        public float FLT_MIN = float.MaxValue;     /* min positive value */
 
         public static int ATTACHMENT_REGION = 0;
         public static int ATTACHMENT_REGION_SEQUENCE = 1;
@@ -93,7 +118,6 @@ namespace CocosSharp_Spine
         public CCSkeleton(string skeletonDataFile, Atlas atlas, float scale = 0)
         {
             var json = new SkeletonJson(atlas);
-            //json.Scale = scale == 0 ? (1 / Director.ContentScaleFactor) : scale;
             json.Scale = scale == 0 ? (1 / 1) : scale;
             SkeletonData skeletonData = json.ReadSkeletonData(skeletonDataFile);
             SetSkeletonData(skeletonData, true);
@@ -101,14 +125,11 @@ namespace CocosSharp_Spine
 
         public CCSkeleton(string skeletonDataFile, string atlasFile, float scale = 0)
         {
-            //skeletonDataFile = "./Content/" + skeletonDataFile;
-            //atlasFile = "./Content/" + atlasFile;
-
             Initialize();
 
             using (StreamReader atlasStream = new StreamReader(CCFileUtils.GetFileStream(atlasFile)))
             {
-                atlas = new Atlas(atlasStream, "", new CocosSharpTextureLoader());
+                atlas = new Atlas(atlasStream, "", new SkeletonTextureLoader());
             }
 
             SkeletonJson json = new SkeletonJson(atlas);

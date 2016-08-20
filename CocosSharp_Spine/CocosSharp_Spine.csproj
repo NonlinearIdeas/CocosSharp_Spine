@@ -114,7 +114,6 @@
     <Compile Include="AppDelegate.cs" />
     <Compile Include="CCSkeleton.cs" />
     <Compile Include="CCSkeletonAnimation.cs" />
-    <Compile Include="CocosSharpTextureLoader.cs" />
     <Compile Include="GameModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

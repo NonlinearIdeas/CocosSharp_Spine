@@ -9,7 +9,7 @@ namespace CocosSharp_Spine
     {
         CCSkeletonAnimation skeletonNode;
 
-		CCMenuItemFont labelBones, labelSlots, labelTimeScaleUp, labelTimeScaleDown, labelScene, labelJump;
+		CCMenuItemFont labelBones, labelSlots, labelTimeScaleUp, labelTimeScaleDown, labelJump;
         CCMenu menu;
 
         public SpineBoyLayer()
@@ -45,13 +45,6 @@ namespace CocosSharp_Spine
 
             ) { AnchorPoint = CCPoint.AnchorMiddleLeft };
 
-            labelScene = new CCMenuItemFont("G = Goblins", (obj) =>
-                {
-                    //Director.ReplaceScene(GoblinLayer.Scene(Window));
-                }
-
-            ) { AnchorPoint = CCPoint.AnchorMiddleLeft };
-
             labelJump = new CCMenuItemFont("J = Jump", (obj) =>
                 {
                     // I truthfully do not know if this is how it is done or not
@@ -61,7 +54,7 @@ namespace CocosSharp_Spine
 
             ) { AnchorPoint = CCPoint.AnchorMiddleLeft };
 
-            menu = new CCMenu(labelBones, labelSlots, labelTimeScaleUp, labelTimeScaleDown, labelJump, labelScene);
+            menu = new CCMenu(labelBones, labelSlots, labelTimeScaleUp, labelTimeScaleDown, labelJump);
             menu.AlignItemsVertically();
             AddChild(menu);
 
