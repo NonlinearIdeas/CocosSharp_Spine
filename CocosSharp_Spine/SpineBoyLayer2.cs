@@ -8,43 +8,9 @@ namespace CocosSharp_Spine
     class SpineBoyLayer : CCLayer
     {
         CCSkeletonAnimation skeletonNode;
-        SkeletonAnimationController animController;
 
-        CCMenuItemFont labelBones, labelSlots, labelTimeScaleUp, labelTimeScaleDown, labelJump;
+		CCMenuItemFont labelBones, labelSlots, labelTimeScaleUp, labelTimeScaleDown, labelJump;
         CCMenu menu;
-
-        void CreateSkeletonAnimation()
-        {
-            String name = @"spineboy";
-            skeletonNode = new CCSkeletonAnimation(name + ".json", name + ".atlas");
-            skeletonNode.Scale = 0.5f;
-
-            skeletonNode.SetMix("walk", "jump", 0.2f);
-            skeletonNode.SetMix("jump", "run", 0.2f);
-            skeletonNode.SetAnimation(0, "walk", true);
-            skeletonNode.AddAnimation(0, "jump", false, 3);
-            skeletonNode.AddAnimation(0, "run", true);
-
-            skeletonNode.Start += Start;
-            skeletonNode.End += End;
-            skeletonNode.Complete += Complete;
-            skeletonNode.Event += Event;
-
-            AddChild(skeletonNode);
-        }
-
-        void CreateAnimationController()
-        {
-            String name = @"spineboy";
-            animController = new SkeletonAnimationController(name);
-            animController.Scale = 0.25f;
-            animController.SetAnimation(AnimationType.MOVING, "run");
-            animController.PlayAnimation(AnimationType.MOVING, true);
-            animController.Position = Scenes.center;
-
-            AddChild(animController);
-        }
-
 
         public SpineBoyLayer()
         {
@@ -54,7 +20,6 @@ namespace CocosSharp_Spine
             labelBones = new CCMenuItemFont("B = Toggle Debug Bones", (obj) =>
                 {
                     skeletonNode.DebugBones = !skeletonNode.DebugBones;
-                    animController.skeleton.DebugBones = !animController.skeleton.DebugBones;
                 }
 
             ) { AnchorPoint = CCPoint.AnchorMiddleLeft };
@@ -62,7 +27,6 @@ namespace CocosSharp_Spine
             labelSlots = new CCMenuItemFont("M = Toggle Debug Slots", (obj) =>
                 {
                     skeletonNode.DebugSlots = !skeletonNode.DebugSlots;
-                    animController.skeleton.DebugSlots = !animController.skeleton.DebugSlots;
                 }
 
             ) { AnchorPoint = CCPoint.AnchorMiddleLeft };
@@ -94,8 +58,22 @@ namespace CocosSharp_Spine
             menu.AlignItemsVertically();
             AddChild(menu);
 
-            CreateSkeletonAnimation();
-            CreateAnimationController();
+			String name = @"spineboy";
+            skeletonNode = new CCSkeletonAnimation(name + ".json", name + ".atlas");
+            skeletonNode.Scale = 0.5f;
+
+            skeletonNode.SetMix("walk", "jump", 0.2f);
+            skeletonNode.SetMix("jump", "run", 0.2f);
+            skeletonNode.SetAnimation(0, "walk", true);
+			TrackEntry jumpEntry = skeletonNode.AddAnimation(0, "jump", false, 3);
+            skeletonNode.AddAnimation(0, "run", true);
+
+            skeletonNode.Start += Start;
+            skeletonNode.End += End;
+            skeletonNode.Complete += Complete;
+            skeletonNode.Event += Event;
+
+            AddChild(skeletonNode);
 
             var listener = new CCEventListenerTouchOneByOne();
             listener.OnTouchBegan = (touch, touchEvent) =>
@@ -117,11 +95,9 @@ namespace CocosSharp_Spine
                     {
                         case CCKeys.B:
                             skeletonNode.DebugBones = !skeletonNode.DebugBones;
-                            animController.skeleton.DebugBones = !animController.skeleton.DebugBones;
                             break;
                         case CCKeys.M:
                             skeletonNode.DebugSlots = !skeletonNode.DebugSlots;
-                            animController.skeleton.DebugSlots = !animController.skeleton.DebugSlots;
                             break;
                         case CCKeys.Up:
                             skeletonNode.TimeScale += 0.1f;
