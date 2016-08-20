@@ -33,13 +33,13 @@ namespace CocosSharp_Spine
             this.Initializer();
         }
 
-        public CCSkeletonAnimation(string skeletonDataFile, Atlas atlas, float scale)
+        public CCSkeletonAnimation(string skeletonDataFile, Atlas atlas, float scale = 1.0f)
             :base(skeletonDataFile,atlas,scale)
         {
             this.Initializer();
         }
 
-        public CCSkeletonAnimation(string skeletonDataFile, string atlasFile, float scale) 
+        public CCSkeletonAnimation(string skeletonDataFile, string atlasFile, float scale = 1.0f) 
             : base(skeletonDataFile,atlasFile,scale)
         {
            
@@ -123,7 +123,7 @@ namespace CocosSharp_Spine
             Animation animation = Skeleton.Data.FindAnimation(name);
             if (animation == null)
             {
-                CCLog.Log(string.Format("Spine: Animation not found: %s", name)); //CCLog("Spine: Animation not found: %s", name);
+                CCLog.Log(string.Format("Spine: Animation not found: %s", name)); 
                 return null;
             }
             return State.SetAnimation(trackIndex, animation, loop);

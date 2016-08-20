@@ -66,7 +66,8 @@ namespace CocosSharp_Spine
             AddChild(menu);
 
 			String name = @"spineboy";
-            skeletonNode = new CCSkeletonAnimation(name + ".json", name + ".atlas", 0.5f);
+            skeletonNode = new CCSkeletonAnimation(name + ".json", name + ".atlas");
+            skeletonNode.Scale = 0.5f;
 
             skeletonNode.SetMix("walk", "jump", 0.2f);
             skeletonNode.SetMix("jump", "run", 0.2f);

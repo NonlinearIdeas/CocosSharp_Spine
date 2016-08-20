@@ -130,7 +130,7 @@ namespace CocosSharp_Spine
             DebugBones = false;
             PremultipliedAlpha = false;
             ImagesDirectory = string.Empty;
-            DebugSlotColor = CCColor4B.Magenta;
+            DebugSlotColor = CCColor4B.Green;
             DebugBoneColor = CCColor4B.Blue;
             DebugJointColor = CCColor4B.Red;
             skeletonGeometry = new CCGeometryNode();
@@ -329,78 +329,73 @@ namespace CocosSharp_Spine
 
             debugger.Clear();
 
-            if (DebugBones || DebugSlots)
+            if (DebugSlots)
             {
-                if (DebugSlots)
+
+                for (int i = 0; i < Skeleton.Slots.Count; ++i)
                 {
 
-                    for (int i = 0; i < Skeleton.Slots.Count; ++i)
+                    var slot = Skeleton.Slots[i];
+
+                    if (slot.Attachment == null) continue;
+
+                    var verticesCount = 0;
+                    var worldVertices = new float[1000]; // Max number of vertices per mesh.
+                    if (slot.Attachment is RegionAttachment)
                     {
+                        var attachment = (RegionAttachment)slot.Attachment;
+                        attachment.ComputeWorldVertices(slot.Bone, worldVertices);
+                        verticesCount = 8;
+                    }
+                    else if (slot.Attachment is MeshAttachment)
+                    {
+                        var mesh = (MeshAttachment)slot.Attachment;
+                        mesh.ComputeWorldVertices(slot, worldVertices);
+                        verticesCount = mesh.Vertices.Length;
+                    }
+                    else if (slot.Attachment is SkinnedMeshAttachment)
+                    {
+                        var mesh = (SkinnedMeshAttachment)slot.Attachment;
+                        mesh.ComputeWorldVertices(slot, worldVertices);
+                        verticesCount = mesh.UVs.Length;
+                    }
+                    else
+                        continue;
 
-                        var slot = Skeleton.Slots[i];
+                    CCPoint[] slotVertices = new CCPoint[verticesCount / 2];
 
-                        if (slot.Attachment == null) continue;
-
-                        var verticesCount = 0;
-                        var worldVertices = new float[1000]; // Max number of vertices per mesh.
-                        if (slot.Attachment is RegionAttachment)
-                        {
-                            var attachment = (RegionAttachment)slot.Attachment;
-                            attachment.ComputeWorldVertices(slot.Bone, worldVertices);
-                            verticesCount = 8;
-                        }
-                        else if (slot.Attachment is MeshAttachment)
-                        {
-                            var mesh = (MeshAttachment)slot.Attachment;
-                            mesh.ComputeWorldVertices(slot, worldVertices);
-                            verticesCount = mesh.Vertices.Length;
-                        }
-                        else if (slot.Attachment is SkinnedMeshAttachment)
-                        {
-                            var mesh = (SkinnedMeshAttachment)slot.Attachment;
-                            mesh.ComputeWorldVertices(slot, worldVertices);
-                            verticesCount = mesh.UVs.Length;
-                        }
-                        else
-                            continue;
-
-                        CCPoint[] slotVertices = new CCPoint[verticesCount / 2];
-
-                        for (int ii = 0, si = 0; ii < verticesCount; ii += 2, si++)
-                        {
-                            slotVertices[si].X = worldVertices[ii] * ScaleX;
-                            slotVertices[si].Y = worldVertices[ii + 1] * ScaleY;
-                        }
-
-                        debugger.DrawPolygon(slotVertices, verticesCount / 2, CCColor4B.Transparent, 1, DebugSlotColor);
-
+                    for (int ii = 0, si = 0; ii < verticesCount; ii += 2, si++)
+                    {
+                        slotVertices[si].X = worldVertices[ii];
+                        slotVertices[si].Y = worldVertices[ii + 1];
                     }
 
+                    debugger.DrawPolygon(slotVertices, verticesCount / 2, CCColor4B.Transparent, 1, DebugSlotColor);
 
                 }
 
-                if (DebugBones)
-                {
-                    // Bone lengths.
-                    for (int i = 0; i < Skeleton.Bones.Count; i++)
-                    {
-                        Bone bone = Skeleton.Bones[i];
-                        x = bone.Data.Length * bone.M00 + bone.WorldX;
-                        y = bone.Data.Length * bone.M10 + bone.WorldY;
 
-                        debugger.DrawLine(new CCPoint(bone.WorldX, bone.WorldY), new CCPoint(x, y), 1, DebugJointColor);
-                    }
-
-                    // Bone origins.
-                    for (int i = 0; i < Skeleton.Bones.Count; i++)
-                    {
-                        Bone bone = Skeleton.Bones[i];
-                        debugger.DrawDot(new CCPoint(bone.WorldX, bone.WorldY), 3, DebugBoneColor);
-
-                    }
-                }
             }
 
+            if (DebugBones)
+            {
+                // Bone lengths.
+                for (int i = 0; i < Skeleton.Bones.Count; i++)
+                {
+                    Bone bone = Skeleton.Bones[i];
+                    x = bone.Data.Length * bone.M00 + bone.WorldX;
+                    y = bone.Data.Length * bone.M10 + bone.WorldY;
+
+                    debugger.DrawLine(new CCPoint(bone.WorldX, bone.WorldY), new CCPoint(x, y), 1, DebugJointColor);
+                }
+
+                // Bone origins.
+                for (int i = 0; i < Skeleton.Bones.Count; i++)
+                {
+                    Bone bone = Skeleton.Bones[i];
+                    debugger.DrawSolidCircle(new CCPoint(bone.WorldX, bone.WorldY), 3, DebugBoneColor);
+                }
+            }
         }
 
         public override CCSize ContentSize

@@ -32,7 +32,6 @@ namespace CocosSharp_Spine
     {
         Dictionary<AnimationType, List<CCSpriteFrame>> _frames;
         String _animSheet = null;
-        String _animSheetFilter = null;
         CCSprite _sprite = null;
         bool _isLooping = false;
         List<CCSpriteFrame> _activeFrames = null;
