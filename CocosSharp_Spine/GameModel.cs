@@ -13,6 +13,7 @@ namespace CocosSharp_Spine
         static CCLayer _controls = null;
         static CCLayer _nodes = null;
         static CCLayer _back = null;
+        static SpineBoyLayer _spLayer = null;
 
         static public void Init()
         {
@@ -21,10 +22,12 @@ namespace CocosSharp_Spine
             _back = new CCLayer();
             _nodes = new CCLayer();
             _controls = new CCLayer();
+            _spLayer = new SpineBoyLayer();
 
             scene.AddChild(_back, 0);
             scene.AddChild(_nodes, 10);
             scene.AddChild(_controls, 20);
+            scene.AddChild(_spLayer, 40);
 
             CreateBackground();
             CreateAnimation();
