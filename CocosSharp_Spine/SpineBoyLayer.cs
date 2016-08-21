@@ -39,6 +39,7 @@ namespace CocosSharp_Spine
             animController = new SkeletonAnimationController(name);
             animController.Scale = 0.25f;
             animController.SetAnimation(AnimationType.MOVING, "run");
+            animController.SetFrameRate(30);
             animController.PlayAnimation(AnimationType.MOVING, true);
             animController.Position = Scenes.center;
 

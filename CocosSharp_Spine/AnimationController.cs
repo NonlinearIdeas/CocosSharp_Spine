@@ -31,12 +31,15 @@ namespace CocosSharp_Spine
         public abstract void SetFrameRate(UInt32 fps);
     }
 
+    /// <summary>
+    /// Load animations and play them on demand.
+    /// </summary>
     public class SkeletonAnimationController : AnimationController
     {
         AnimationState _state;
         bool _isLooping = false;
         bool _isPlaying = false;
-        float _frameIntervalSeconds = 1.0f / 60;
+        float _timeScale = 1.0f;
         CCSkeleton _skeleton;
         Dictionary<AnimationType, String> _animDict = null;
 
@@ -46,7 +49,7 @@ namespace CocosSharp_Spine
         {
             if (_isPlaying)
             {
-                _state.Update(_frameIntervalSeconds);
+                _state.Update(dt * _timeScale);
                 _state.Apply(_skeleton.Skeleton);
                 _skeleton.UpdateWorldTransform();               
             }
@@ -83,21 +86,39 @@ namespace CocosSharp_Spine
             }
         }
 
+        /// <summary>
+        /// Is the animation still playing?  If looping, this will always be true.
+        /// </summary>
+        /// <returns></returns>
         public override bool IsPlaying()
         {
             return _isPlaying;
         }
 
+        /// <summary>
+        /// Is the animation set to loop?
+        /// </summary>
+        /// <returns></returns>
         public override bool IsLooping()
         {
             return _isLooping;
         }
 
+        /// <summary>
+        /// Set the name of the animation to use for a given animation type.
+        /// </summary>
+        /// <param name="animType"></param>
+        /// <param name="name"></param>
         public override void SetAnimation(AnimationType animType, string name)
         {
             _animDict[animType] = name;
         }
 
+        /// <summary>
+        /// Start playing an animation.
+        /// </summary>
+        /// <param name="animType"></param>
+        /// <param name="loop"></param>
         public override void PlayAnimation(AnimationType animType, bool loop)
         {
             Debug.Assert(_animDict.ContainsKey(animType));
@@ -108,28 +129,44 @@ namespace CocosSharp_Spine
             _state.SetAnimation(0, animation, loop);
             _isLooping = loop;
             _isPlaying = true;
-            Schedule(UpdateAnimation, _frameIntervalSeconds);
+            Schedule(UpdateAnimation);
         }
 
+        /// <summary>
+        /// Pause the active animation.  This is cleaner than
+        /// setting the time rate to 0.
+        /// </summary>
         public override void PauseAnimation()
         {
             UnscheduleAll();
         }
 
+        /// <summary>
+        /// Resume the animation.
+        /// </summary>
         public override void ResumeAnimation()
         {
-            Schedule(UpdateAnimation, _frameIntervalSeconds);
+            Schedule(UpdateAnimation);
         }
 
+        /// <summary>
+        /// Set the frame rate for animation.  This can be between 1 and 60 fps,
+        /// inclusive.
+        /// </summary>
+        /// <param name="fps"></param>
         public override void SetFrameRate(uint fps)
         {
             Debug.Assert(fps > 0);
             Debug.Assert(fps <= 60);
-            UnscheduleAll();
-            _frameIntervalSeconds = 1.0f / fps;
-            Schedule(UpdateAnimation, _frameIntervalSeconds);
+            _timeScale = fps / 60.0f;
         }
 
+        /// <summary>
+        /// Set the mix time between animations.
+        /// </summary>
+        /// <param name="animFrom"></param>
+        /// <param name="animTo"></param>
+        /// <param name="duration"></param>
         public void SetMix(AnimationType animFrom, AnimationType animTo, float duration)
         {
             Debug.Assert(_animDict.ContainsKey(animFrom));
